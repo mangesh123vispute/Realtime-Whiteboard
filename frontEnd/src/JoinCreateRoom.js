@@ -7,7 +7,11 @@ const JoinCreateRoom = ({ uuid, setUser, setRoomJoined }) => {
   const [name, setName] = useState("");
   const [joinName, setJoinName] = useState("");
   const [joinRoomId, setJoinRoomId] = useState("");
-  const { isLogin } = useAuth();
+  const { isLogin, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
 
   const handleCreateSubmit = (e) => {
     e.preventDefault();
@@ -39,12 +43,24 @@ const JoinCreateRoom = ({ uuid, setUser, setRoomJoined }) => {
   return (
     <div className="container">
       <div className="row">
-        <div className="col-md-12">
+        <div className="col-md-10">
           <h1 className="text-center my-5">
             Welcome To Realtime Whiteboard Sharing App
           </h1>
         </div>
+        <div className="col-md-2">
+          {isLogin ? (
+            <button
+              type="button"
+              class="btn btn-danger text-center my-5"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          ) : null}
+        </div>
       </div>
+
       <div className="row mx-5 mt-5">
         <div className="col-md-5 p-5 border mx-auto">
           <h1 className="text-center text-primary mb-5">Create Room</h1>

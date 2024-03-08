@@ -32,7 +32,11 @@ const useAuth = () => {
       });
   }, []);
 
-  return isLogin;
+  const logout = () => {
+    client.logout();
+  };
+
+  return { isLogin, logout };
 };
 
 export default useAuth;
