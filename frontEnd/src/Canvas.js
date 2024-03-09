@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import rough from "roughjs/bundled/rough.esm";
 
 const generator = rough.generator();
+
 const Canvas = ({
   canvasRef,
   ctx,
@@ -10,6 +11,7 @@ const Canvas = ({
   elements,
   tool,
   socket,
+  brushSize,
 }) => {
   const [isDrawing, setIsDrawing] = useState(false);
 
@@ -21,13 +23,13 @@ const Canvas = ({
     canvas.style.height = `${window.innerHeight}px`;
     const context = canvas.getContext("2d");
 
-    context.strokeWidth = 5;
+    context.strokeWidth = brushSize;
     context.scale(2, 2);
     context.lineCap = "round";
     context.strokeStyle = color;
-    context.lineWidth = 5;
+    context.lineWidth = brushSize;
     ctx.current = context;
-  }, []);
+  }, [brushSize, color]);
 
   useEffect(() => {
     ctx.current.strokeStyle = color;
@@ -45,6 +47,7 @@ const Canvas = ({
           path: [[offsetX, offsetY]],
           stroke: color,
           element: tool,
+          brushSize,
         },
       ]);
     } else {
@@ -55,6 +58,51 @@ const Canvas = ({
     }
 
     setIsDrawing(true);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDrawing) {
+      return;
+    }
+    const { offsetX, offsetY } = e.nativeEvent;
+
+    if (tool === "rect") {
+      setElements((prevElements) =>
+        prevElements.map((ele, index) =>
+          index === elements.length - 1
+            ? {
+                ...ele,
+                width: offsetX - ele.offsetX,
+                height: offsetY - ele.offsetY,
+              }
+            : ele
+        )
+      );
+    } else if (tool === "line") {
+      setElements((prevElements) =>
+        prevElements.map((ele, index) =>
+          index === elements.length - 1
+            ? { ...ele, width: offsetX, height: offsetY }
+            : ele
+        )
+      );
+    } else if (tool === "pencil") {
+      setElements((prevElements) =>
+        prevElements.map((ele, index) =>
+          index === elements.length - 1
+            ? {
+                ...ele,
+                path: [...ele.path, [offsetX, offsetY]],
+                brushSize,
+              }
+            : ele
+        )
+      );
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDrawing(false);
   };
 
   useLayoutEffect(() => {
@@ -73,7 +121,7 @@ const Canvas = ({
           generator.rectangle(ele.offsetX, ele.offsetY, ele.width, ele.height, {
             stroke: ele.stroke,
             roughness: 0,
-            strokeWidth: 5,
+            strokeWidth: brushSize,
           })
         );
       } else if (ele.element === "line") {
@@ -81,76 +129,20 @@ const Canvas = ({
           generator.line(ele.offsetX, ele.offsetY, ele.width, ele.height, {
             stroke: ele.stroke,
             roughness: 0,
-            strokeWidth: 5,
+            strokeWidth: brushSize,
           })
         );
       } else if (ele.element === "pencil") {
         roughCanvas.linearPath(ele.path, {
           stroke: ele.stroke,
           roughness: 0,
-          strokeWidth: 5,
+          strokeWidth: ele.brushSize,
         });
       }
     });
     const canvasImage = canvasRef.current.toDataURL();
     socket.emit("drawing", canvasImage);
-  }, [elements]);
-
-  const handleMouseMove = (e) => {
-    if (!isDrawing) {
-      return;
-    }
-    const { offsetX, offsetY } = e.nativeEvent;
-
-    if (tool === "rect") {
-      setElements((prevElements) =>
-        prevElements.map((ele, index) =>
-          index === elements.length - 1
-            ? {
-                offsetX: ele.offsetX,
-                offsetY: ele.offsetY,
-                width: offsetX - ele.offsetX,
-                height: offsetY - ele.offsetY,
-                stroke: ele.stroke,
-                element: ele.element,
-              }
-            : ele
-        )
-      );
-    } else if (tool === "line") {
-      setElements((prevElements) =>
-        prevElements.map((ele, index) =>
-          index === elements.length - 1
-            ? {
-                offsetX: ele.offsetX,
-                offsetY: ele.offsetY,
-                width: offsetX,
-                height: offsetY,
-                stroke: ele.stroke,
-                element: ele.element,
-              }
-            : ele
-        )
-      );
-    } else if (tool === "pencil") {
-      setElements((prevElements) =>
-        prevElements.map((ele, index) =>
-          index === elements.length - 1
-            ? {
-                offsetX: ele.offsetX,
-                offsetY: ele.offsetY,
-                path: [...ele.path, [offsetX, offsetY]],
-                stroke: ele.stroke,
-                element: ele.element,
-              }
-            : ele
-        )
-      );
-    }
-  };
-  const handleMouseUp = () => {
-    setIsDrawing(false);
-  };
+  }, [elements, brushSize]);
 
   return (
     <div
