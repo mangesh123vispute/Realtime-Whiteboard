@@ -1,8 +1,8 @@
 # Realtime Whiteboard
 
 Realtime Whiteboard is a collaborative web application built with React to provide users with a seamless and interactive whiteboarding experience. It facilitates real-time collaboration, allowing users to create or join whiteboard sessions, draw using various tools, and receive instant updates on others' actions. The application also incorporates authentication, responsive design, and the option to save and export whiteboard content.
-
-#Screenshorts
+[Click here to watch the video]([https://your-video-link-here](https://drive.google.com/file/d/19tKVK18mBR5LFjacz1T7tFmFMLA1hbql/view?usp=sharing))
+# Screenshorts
 
 ![WhatsApp Image 2024-03-09 at 18 38 57_93457797](https://github.com/mangesh123vispute/Realtime-whiteboard/assets/112755002/0a5b395d-2ccf-47be-8658-fe582ea8d44f)
 
