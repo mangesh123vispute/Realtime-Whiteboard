@@ -52,7 +52,7 @@ const JoinCreateRoom = ({ uuid, setUser, setRoomJoined }) => {
           {isLogin ? (
             <button
               type="button"
-              class="btn btn-danger text-center my-5"
+              className="btn btn-danger text-center my-5"
               onClick={handleLogout}
             >
               Logout

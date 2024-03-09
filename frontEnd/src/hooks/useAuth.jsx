@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Keycloak from "keycloak-js";
 
 const client = new Keycloak({
-  url: "http://127.0.0.1:8080/",
+  url: "https://chimerical-zuccutto-84460a.netlify.app/",
   realm: "myrealm",
   clientId: "myclient",
 });
